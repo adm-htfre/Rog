@@ -1,9 +1,8 @@
 import serial
 import csv
-import time
 
 # Replace 'COM12' with your serial port
-ser = serial.Serial('COM12', 9600, timeout=1)
+ser = serial.Serial('COM12', 115200, timeout=1)
 
 # Open a CSV file for writing
 with open('Try5.csv', 'w', newline='') as csvfile:
@@ -11,6 +10,8 @@ with open('Try5.csv', 'w', newline='') as csvfile:
     csvwriter.writerow(['RPM', 'R_IS'])  # Write the header
 
     buffer = []
+    zero_rpm_count = 0  # Counter for consecutive zero RPM values
+
     while True:
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').strip()
@@ -29,10 +30,20 @@ with open('Try5.csv', 'w', newline='') as csvfile:
 
                         # Write to CSV
                         csvwriter.writerow([rpm, r_is])
+
+                        # Check for consecutive zero RPM values
+                        if rpm == 0:
+                            zero_rpm_count += 1
+                        else:
+                            zero_rpm_count = 0
+
+                        # Exit if RPM is zero for 5 consecutive samples
+                        if zero_rpm_count >= 5:
+                            print("RPM has been zero for 5 consecutive samples. Exiting...")
+                            break
+
                     except (IndexError, ValueError) as e:
                         print(f"Error parsing lines: {rpm_line}, {r_is_line} - {e}")
-                    
+
                     # Clear the buffer for next set of lines
                     buffer.clear()
-
-        time.sleep(0.1)  # Small delay

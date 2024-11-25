@@ -6,7 +6,7 @@ rpm_values = []
 r_is_values = []
 
 # Open the CSV file for reading
-with open('Try2.csv', 'r') as csvfile:
+with open('Try3.csv', 'r') as csvfile:
     csvreader = csv.reader(csvfile)
     next(csvreader)  # Skip the header row
     for row in csvreader:
