@@ -2,6 +2,7 @@ import serial
 import csv
 import os
 import matplotlib.pyplot as plt
+from collections import deque
 
 # Replace 'COM12' with your serial port
 ser = serial.Serial('COM12', 115200, timeout=1)
@@ -14,16 +15,33 @@ def get_next_file_number(prefix):
     numbers = [int(f.split('_')[-1].split('.')[0]) for f in files]
     return max(numbers) + 1
 
-# Function to read CSV and return data
-def read_csv(file_name):
+# Function to read CSV and calculate rolling average
+def read_and_calculate_rolling_avg(file_name):
     rpm_values = []
     r_is_values = []
+
+    # Deques to store the last 5 samples for rolling average
+    rpm_window = deque(maxlen=5)
+    r_is_window = deque(maxlen=5)
+
     with open(file_name, 'r') as csvfile:
         csvreader = csv.reader(csvfile)
         next(csvreader)  # Skip the header row
         for row in csvreader:
-            rpm_values.append(int(row[0]))
-            r_is_values.append(int(row[1]))
+            rpm = int(row[0])
+            r_is = int(row[1])
+
+            # Add the current sample to the rolling window
+            rpm_window.append(rpm)
+            r_is_window.append(r_is)
+
+            # Calculate the rolling average if we have enough samples
+            if len(rpm_window) == 5:
+                avg_rpm = sum(rpm_window) / 5
+                avg_r_is = sum(r_is_window) / 5
+                rpm_values.append(avg_rpm)
+                r_is_values.append(avg_r_is)
+
     return rpm_values, r_is_values
 
 # Get the next file numbers
@@ -68,8 +86,10 @@ with open(ramping_up_file, 'w', newline='') as up_file, open(ramping_down_file, 
 
                         if is_ramping_up:
                             up_writer.writerow([rpm, r_is])
+                            up_file.flush()  # Ensure data is written to file
                         else:
                             down_writer.writerow([rpm, r_is])
+                            down_file.flush()  # Ensure data is written to file
 
                         # Check for consecutive zero RPM values
                         if rpm == 0:
@@ -81,17 +101,17 @@ with open(ramping_up_file, 'w', newline='') as up_file, open(ramping_down_file, 
                         if zero_rpm_count >= 5:
                             print("RPM has been zero for 5 consecutive samples. Plotting data...")
 
-                            # Read data from CSV files
-                            up_rpm, up_r_is = read_csv(ramping_up_file)
-                            down_rpm, down_r_is = read_csv(ramping_down_file)
+                            # Read and calculate rolling average data from CSV files
+                            up_rpm, up_r_is = read_and_calculate_rolling_avg(ramping_up_file)
+                            down_rpm, down_r_is = read_and_calculate_rolling_avg(ramping_down_file)
 
-                            # Plot the data
+                            # Plot the averaged data
                             plt.figure(figsize=(10, 5))
-                            plt.plot(up_rpm, up_r_is, label='Ramping Up', marker='o')
-                            plt.plot(down_rpm, down_r_is, label='Ramping Down', marker='x')
+                            plt.plot(up_rpm, up_r_is, label='Ramping Up (5-sample rolling avg)', marker='o')
+                            plt.plot(down_rpm, down_r_is, label='Ramping Down (5-sample rolling avg)', marker='x')
                             plt.xlabel('RPM')
-                            plt.ylabel('R_IS Value')
-                            plt.title('RPM vs R_IS Plot')
+                            plt.ylabel('Average R_IS Value')
+                            plt.title('RPM vs Average R_IS Plot (5-sample rolling average)')
                             plt.legend()
                             plt.grid(True)
                             plt.show()

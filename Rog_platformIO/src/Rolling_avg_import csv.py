@@ -11,7 +11,7 @@ rpm_window = deque(maxlen=5)
 r_is_window = deque(maxlen=5)
 
 # Open the CSV file for reading
-with open('Ramping_down_3.csv', 'r') as csvfile:
+with open('Ramping_up_4.csv', 'r') as csvfile:
     csvreader = csv.reader(csvfile)
     next(csvreader)  # Skip the header row
     for row in csvreader:
