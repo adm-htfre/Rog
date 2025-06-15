@@ -7,11 +7,11 @@ We start with building a ball machine. The ball machine has 3 parts
 
 Launcher Sub-System:
 Default connections
-#define Bott_RPWM 3
-#define Bott_LPWM 4
+define Bott_RPWM 3
+define Bott_LPWM 4
 
-#define Top_RPWM 5
-#define Top_LPWM 6
+define Top_RPWM 5
+define Top_LPWM 6
 
 const int Top_R_IS = A2; 
 const int Top_L_IS = A3; 
