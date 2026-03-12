@@ -11,8 +11,8 @@ move_duration = 0.5
 
 print("--- Dual Controller Active ---")
 print("W/A/S/D : Move Robot")
-print("'r'   : Ramp Launcher up to 20%")
-print("'e'     : Ramp Launcher down to 0%")
+print("Space   : Ramp Launcher up to 20%")
+print("'n'     : Ramp Launcher down to 0%")
 print("'q'     : Quit all")
 
 def main():
@@ -33,11 +33,11 @@ def main():
                 bot.turn_right(duration=move_duration, speed=speed)
 
             # --- Launcher Controls ---
-            elif key == 'r':
+            elif key == ' ':
                 print("Ramping up launcher (20%)...")
-                launcher.ramp_to(0.3)
+                launcher.ramp_to(0.2)
             
-            elif key == 'e':
+            elif key == 'n':
                 print("Ramping down launcher...")
                 launcher.ramp_to(0.0)
 
