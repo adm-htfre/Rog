@@ -90,7 +90,3 @@ git commit -m "docs: clean up readme and remove comments"
 git push
 
 ```
-
-
-
-**Would you like me to generate the `config.py` file content to match this new structure?**
