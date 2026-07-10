@@ -16,8 +16,8 @@ class RobotController:
         self.right_en = OutputDevice(26)
 
     def _set_motors(self, l_speed, r_speed, l_dir, r_dir):
-        self.left_en.off()
-        self.right_en.off()
+        self.left_en.on()
+        self.right_en.on()
         self.left_dir.value = l_dir
         self.right_dir.value = r_dir
         self.left_pwm.value = l_speed
