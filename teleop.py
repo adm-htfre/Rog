@@ -34,12 +34,16 @@ def main():
     with Input(keynames='curtsies') as input_generator:
         for key in input_generator:
             if key == 'w':
+                print("Moving forward...")
                 bot.move_forward(duration=move_duration, speed=speed)
             elif key == 's':
+                print("Moving backward...")
                 bot.move_backward(duration=move_duration, speed=speed)
             elif key == 'a':
+                print("Turning left...")
                 bot.turn_left(duration=move_duration, speed=speed)
             elif key == 'd':
+                print("Turning right...")
                 bot.turn_right(duration=move_duration, speed=speed)
 
             elif key == 'r':
